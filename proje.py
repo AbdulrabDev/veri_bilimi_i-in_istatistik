@@ -39,3 +39,28 @@ correlation = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].corr()
 print(correlation)
 
 sns.histplot(df_sample['Global_Sales'], kde=True)
+
+# ================================================
+# Visualization (Boxplot - Countplot - Histogram)
+# ================================================
+# 1. Boxplot للمبيعات (كشف القيم الشاذة)
+plt.figure(figsize=(6,4))
+sns.boxplot(x=df_sample['Global_Sales'])
+plt.title("Global Sales Boxplot")
+plt.show()
+
+# 2. Countplot للأنواع (Genre)
+plt.figure(figsize=(8,5))
+sns.countplot(x='Genre', data=df_sample)
+plt.title("Game Genre Distribution")
+plt.xticks(rotation=45)
+plt.show()
+
+# 3. حساب نسبة الألعاب الأعلى مبيعًا
+# (مثال: كم نسبة الألعاب التي مبيعاتها أكبر من المتوسط)
+mean_sales = df_sample['Global_Sales'].mean()
+high_sales = df_sample[df_sample['Global_Sales'] > mean_sales]
+
+percentage = (len(high_sales) / len(df_sample)) * 100
+
+print(f"\nYüksek satışlı oyunların oranı: %{percentage:.2f}")
