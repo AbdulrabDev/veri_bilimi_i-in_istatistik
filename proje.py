@@ -25,3 +25,17 @@ df['User_Score'] = df['User_Score'].fillna(df['User_Score'].mean())
 df_sample = df.sample(n=1000, random_state=42)
 
 # ==========================================
+# İstatistiksel Hesaplamalar ve Görselleştirmeler
+# ==========================================
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+stats_summary = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].describe()
+print(stats_summary)
+
+print(df_sample['Global_Sales'].skew())
+
+correlation = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].corr()
+print(correlation)
+
+sns.histplot(df_sample['Global_Sales'], kde=True)
