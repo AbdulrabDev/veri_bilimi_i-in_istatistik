@@ -77,8 +77,8 @@ print("NEDEN: Verilerin normal dağılıp dağılmadığını belirlemek, doğru
 print(f"YORUM: P < 0.05 olduğu için veriler normal dağılmamaktadır.\n")
 
 # Levene Testi (Varyans Homojenliği)
-action_sales = df[df['Genre'] == 'Action']['Global_Sales']
-sports_sales = df[df['Genre'] == 'Sports']['Global_Sales']
+action_sales = df_sample[df_sample['Genre'] == 'Action']['Global_Sales']
+sports_sales = df_sample[df_sample['Genre'] == 'Sports']['Global_Sales']
 _, levene_p = stats.levene(action_sales.sample(100), sports_sales.sample(100))
 print(f"2. Levene Testi P-Değeri: {levene_p:.10f}")
 print("NEDEN: Grupların varyanslarının eşitliğini kontrol etmek, karşılaştırma testlerinin güvenilirliği için gereklidir.")
