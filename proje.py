@@ -130,31 +130,4 @@ print("-" * 50)
 # ==========================================
 # 4. HİPOTEZ TESTLERİ (INFERENTIAL STATISTICS)
 # ==========================================
-print("\n--- [BÖLÜM 3]: HİPOTEZ TESTLERİ ---")
-
-# Spearman Korelasyon Analizi
-corr_val, spearman_p = stats.spearmanr(df_sample['Critic_Score'], df_sample['Global_Sales'])
-print(f"1. Spearman Korelasyonu: {corr_val:.3f} | P-Değeri: {spearman_p:.10f}")
-
-plt.figure()
-sns.regplot(x='Critic_Score', y='Global_Sales', data=df_sample, scatter_kws={'alpha':0.3}, line_kws={'color':'red'})
-plt.title("Eleştirmen Puanı ve Küresel Satış İlişkisi")
-plt.show()
-
-print("RAPOR: Pozitif korelasyon, eleştirmen puanları arttıkça satışların artma eğiliminde olduğunu kanıtlar.")
-
-# Bağımsız Örneklem T-Testi
-t_stat, t_p = stats.ttest_ind(action_sales.sample(100), sports_sales.sample(100))
-print(f"\n2. Bağımsız T-Testi (Action vs Sports) P-Değeri: {t_p:.4f}")
-
-plt.figure()
-sns.boxplot(x='Genre', y='Global_Sales', data=df[df['Genre'].isin(['Action', 'Sports'])])
-plt.ylim(0, 5)
-plt.title("Aksiyon ve Spor Oyunları Satış Karşılaştırması")
-plt.show()
-
-def karar_ver(p):
-    return "İstatistiksel olarak anlamlı bir fark vardır (H0 reddedildi)." if p < 0.05 else "Anlamlı bir fark yoktur (H0 reddedilemedi)."
-
-print(f"KARAR: {karar_ver(t_p)}")
 
