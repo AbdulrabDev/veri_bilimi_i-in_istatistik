@@ -1,35 +1,78 @@
-# ==========================================
-#  Veri Temizleme ve İşleme
-# ==========================================
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# 1. قراءة البيانات
+# =============================================================================
+#         VERİ ANALİZİ, ÖN İŞLEME VE TEMİZLEME (SORUMLU: 1. KİŞİ)
+# =============================================================================
+
+# Bu bölümün amacı, ham veriyi analiz edilebilir, temiz ve güvenilir bir 
+# hale getirmektir. Eksik veriler yönetilmiş ve mantıksal filtreleme yapılmıştır.
+
+
+# 1. ADIM: Veri Setinin Sisteme Yüklenmesi
+# Video oyunları satış verilerini içeren CSV dosyası pandas kütüphanesi ile okunur.
 df = pd.read_csv('Video_Games_Sales_as_at_22_Dec_2016.csv')
 
-# 2. تنظيف البيانات (Veri Temizleme)
-# تحويل تقييم المستخدمين إلى أرقام ومعالجة النصوص الغريبة مثل 'tbd'
+# 2. ADIM: İlk Eksik Veri Analizi (Eksik Veri Oranlarının Tespiti)
+# Hangi sütunlarda ne kadar veri kaybı olduğunu anlamak için yüzde hesabı yapılır.
+# Bu adım, temizleme stratejimizi belirlemek için kritik öneme sahiptir.
+missing_ratio = (df.isnull().sum() / len(df)) * 100
+print("--- 1. KİŞİ: Sütun Bazlı Eksik Veri Oranları (%) ---")
+print(missing_ratio.round(2))
+print("-" * 50)
+
+# 3. ADIM: Mantıksal Filtreleme (Yıl Bazlı Filtreleme)
+# Analizin güncel kalması ve modern oyun pazarını yansıtması için 
+# sadece 2000 yılı ve sonrasında çıkan oyunlar veri setine dahil edilir.
+df = df[df['Year_of_Release'] >= 2000]
+print(f"--- Filtreleme Sonrası (2000+) Toplam Oyun Sayısı: {len(df)} ---")
+
+# 4. ADIM: Mükerrer Veri Kontrolü (Duplicate Rows)
+# Veri setinde tamamen aynı olan satırlar varsa bunlar tespit edilir ve silinir.
+# Bu işlem, istatistiksel sonuçların yapay olarak sapmasını önler.
+duplicate_count = df.duplicated().sum()
+if duplicate_count > 0:
+    df.drop_duplicates(inplace=True)
+    print(f"--- {duplicate_count} adet mükerrer satır başarıyla temizlendi ---")
+
+# 5. ADIM: Veri Tiplerinin Düzenlenmesi ve Metin Temizliği
+# User_Score sütunu normalde 'object' (metin) tipindedir çünkü içinde 'tbd' yazıları vardır.
+# to_numeric fonksiyonu ile 'tbd' ifadeleri NaN (boş veri) yapılır ve sütun sayısal olur.
 df['User_Score'] = pd.to_numeric(df['User_Score'], errors='coerce')
 
-# حذف الأسطر التي تفتقد لبيانات أساسية (الاسم، السنة، النوع، المبيعات)
+# 6. ADIM: Kritik Olmayan Satırların Kaldırılması
+# İsim, Yıl, Tür ve Global Satış gibi temel bilgilerde eksiklik olan satırlar silinir.
+# Çünkü bu bilgiler olmadan analiz yapmak mümkün değildir.
 df.dropna(subset=['Name', 'Year_of_Release', 'Genre', 'Global_Sales'], inplace=True)
 
-# تحويل السنة إلى رقم صحيح
-df['Year_of_Release'] = df['Year_of_Release'].astype(int)
-
-# 3. تعويض القيم المفقودة (Eksik Veri Doldurma)
-# استبدال القيم الفارغة في تقييمات النقاد والجمهور بالمتوسط الحسابي
+# 7. ADIM: Eksik Verilerin Ortalama (Mean) ile Doldurulması (Imputation)
+# Critic_Score ve User_Score sütunlarında çok fazla eksik veri olduğu için 
+# bu satırları silmek yerine verinin aritmetik dengesini bozmadan ortalama ile dolduruyoruz.
 df['Critic_Score'] = df['Critic_Score'].fillna(df['Critic_Score'].mean())
 df['User_Score'] = df['User_Score'].fillna(df['User_Score'].mean())
 
-# 4. أخذ عينة عشوائية (Sampling / Örnekleme) 
-# اختيار 1000 عينة لتمثيل المجتمع الإحصائي (أكثر من الـ 500 المطلوبة بالملف)
+# 8. ADIM: Örnekleme (Sampling)
+# Çok büyük veri setlerinde çalışmak karmaşıklığı artırabilir. 
+# Bu nedenle toplumun özelliklerini yansıtan 1000 adet rastgele örneklem seçilir.
 df_sample = df.sample(n=1000, random_state=42)
+
+# 9. ADIM: SON KONTROL VE TEMİZLİK TESTİ (Nispeten Önemli Adım)
+# Bu adımda, yaptığımız tüm temizlik işlemlerinin başarılı olup olmadığı test edilir.
+# Puan sütunlarında 0 (sıfır) sonucu çıkması, verinin tamamen temizlendiğini kanıtlar.
+print("\n" + "="*50)
+print("--- 1. KİŞİ: FİNAL TEMİZLİK KONTROL RAPORU ---")
+final_check = df_sample[['Critic_Score', 'User_Score']].isnull().sum()
+print("Kalan Eksik Veri Sayısı (0 olmalı):")
+print(final_check)
+print("="*50)
+
+print(f"\n--- Analiz için toplam {len(df_sample)} adet tertemiz veri hazırlandı. ---")
 
 # ==========================================
 # İstatistiksel Hesaplamalar ve Görselleştirmeler
 # ==========================================
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 stats_summary = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].describe()
 print(stats_summary)
 
