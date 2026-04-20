@@ -26,11 +26,30 @@ print("--- 1. KİŞİ: Sütun Bazlı Eksik Veri Oranları (%) ---")
 print(missing_ratio.round(2))
 print("-" * 50)
 
-# 3. ADIM: Mantıksal Filtreleme (Yıl Bazlı Filtreleme)
-# Analizin güncel kalması ve modern oyun pazarını yansıtması için 
-# sadece 2000 yılı ve sonrasında çıkan oyunlar veri setine dahil edilir.
-df = df[df['Year_of_Release'] >= 2000]
-print(f"--- Filtreleme Sonrası (2000+) Toplam Oyun Sayısı: {len(df)} ---")
+# 3. ADIM: Kritik Olmayan Satırların Hesaplanması ve Kaldırılması
+# İsim, Yıl, Tür ve Global Satış gibi temel bilgilerde eksiklik olan satırlar önce hesaplanır sonra silinir.
+# Çünkü bu bilgiler olmadan analiz yapmak mümkün değildir.
+
+missing_critical = df[['Name', 'Year_of_Release', 'Genre', 'Global_Sales']].isnull().any(axis=1).sum()
+print(f"--- Temel verisi eksik olan satır sayısı: {missing_critical} (Silinecek) ---")
+
+# Silme
+df.dropna(subset=['Name', 'Year_of_Release', 'Genre', 'Global_Sales'], inplace=True)
+print("--- Temel verisi eksik olan satırlar başarıyla silindi ---")
+
+
+
+# 3. ADIM: Kritik Olmayan Satırların Hesaplanması ve Kaldırılması
+# İsim, Yıl, Tür ve Global Satış gibi temel bilgilerde eksiklik olan satırlar önce hesaplanır sonra silinir.
+# Çünkü bu bilgiler olmadan analiz yapmak mümkün değildir.
+
+missing_critical = df[['Name', 'Year_of_Release', 'Genre', 'Global_Sales']].isnull().any(axis=1).sum()
+print(f"--- Temel verisi eksik olan satır sayısı: {missing_critical} (Silinecek) ---")
+
+# Silme
+df.dropna(subset=['Name', 'Year_of_Release', 'Genre', 'Global_Sales'], inplace=True)
+print("--- Temel verisi eksik olan satırlar başarıyla silindi ---")
+
 
 # 4. ADIM: Mükerrer Veri Kontrolü (Duplicate Rows)
 # Veri setinde tamamen aynı olan satırlar varsa bunlar tespit edilir ve silinir.
@@ -39,16 +58,20 @@ duplicate_count = df.duplicated().sum()
 if duplicate_count > 0:
     df.drop_duplicates(inplace=True)
     print(f"--- {duplicate_count} adet mükerrer satır başarıyla temizlendi ---")
+    
+
+# ==================5. ADIM: Mantıksal Filtreleme (Yıl Bazlı Filtreleme)==================
+# Analizin güncel kalması ve modern oyun pazarını yansıtması için 
+# sadece 2000 yılı ve sonrasında çıkan oyunlar veri setine dahil edilir.
+df = df[df['Year_of_Release'] >= 2000]
+print(f"--- Filtreleme Sonrası (2000+) Toplam Oyun Sayısı: {len(df)} ---")
+
 
 # 5. ADIM: Veri Tiplerinin Düzenlenmesi ve Metin Temizliği
 # User_Score sütunu normalde 'object' (metin) tipindedir çünkü içinde 'tbd' yazıları vardır.
 # to_numeric fonksiyonu ile 'tbd' ifadeleri NaN (boş veri) yapılır ve sütun sayısal olur.
 df['User_Score'] = pd.to_numeric(df['User_Score'], errors='coerce')
 
-# 6. ADIM: Kritik Olmayan Satırların Kaldırılması
-# İsim, Yıl, Tür ve Global Satış gibi temel bilgilerde eksiklik olan satırlar silinir.
-# Çünkü bu bilgiler olmadan analiz yapmak mümkün değildir.
-df.dropna(subset=['Name', 'Year_of_Release', 'Genre', 'Global_Sales'], inplace=True)
 
 # 7. ADIM: Eksik Verilerin Ortalama (Mean) ile Doldurulması (Imputation)
 # Critic_Score ve User_Score sütunlarında çok fazla eksik veri olduğu için 
