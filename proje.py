@@ -1,6 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy import stats
+import statsmodels.api as sm
+import numpy as np
 
 # =============================================================================
 #         VERİ ANALİZİ, ÖN İŞLEME VE TEMİZLEME (SORUMLU: 1. KİŞİ)
