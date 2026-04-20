@@ -18,28 +18,15 @@ import numpy as np
 # Video oyunları satış verilerini içeren CSV dosyası pandas kütüphanesi ile okunur.
 df = pd.read_csv('Video_Games_Sales_as_at_22_Dec_2016.csv')
 
-# 2. ADIM: İlk Eksik Veri Analizi (Eksik Veri Oranlarının Tespiti)
+# 3. ADIM: İlk Eksik Veri Analizi (Eksik Veri Oranlarının Tespiti)
 # Hangi sütunlarda ne kadar veri kaybı olduğunu anlamak için yüzde hesabı yapılır.
 # Bu adım, temizleme stratejimizi belirlemek için kritik öneme sahiptir.
 missing_ratio = (df.isnull().sum() / len(df)) * 100
-print("--- 1. KİŞİ: Sütun Bazlı Eksik Veri Oranları (%) ---")
+print("--- Sütun Bazlı Eksik Veri Oranları (%) ---")
 print(missing_ratio.round(2))
 print("-" * 50)
 
-# 3. ADIM: Kritik Olmayan Satırların Hesaplanması ve Kaldırılması
-# İsim, Yıl, Tür ve Global Satış gibi temel bilgilerde eksiklik olan satırlar önce hesaplanır sonra silinir.
-# Çünkü bu bilgiler olmadan analiz yapmak mümkün değildir.
-
-missing_critical = df[['Name', 'Year_of_Release', 'Genre', 'Global_Sales']].isnull().any(axis=1).sum()
-print(f"--- Temel verisi eksik olan satır sayısı: {missing_critical} (Silinecek) ---")
-
-# Silme
-df.dropna(subset=['Name', 'Year_of_Release', 'Genre', 'Global_Sales'], inplace=True)
-print("--- Temel verisi eksik olan satırlar başarıyla silindi ---")
-
-
-
-# 3. ADIM: Kritik Olmayan Satırların Hesaplanması ve Kaldırılması
+# 2. ADIM: Kritik Olmayan Satırların Hesaplanması ve Kaldırılması
 # İsim, Yıl, Tür ve Global Satış gibi temel bilgilerde eksiklik olan satırlar önce hesaplanır sonra silinir.
 # Çünkü bu bilgiler olmadan analiz yapmak mümkün değildir.
 
@@ -60,7 +47,7 @@ if duplicate_count > 0:
     print(f"--- {duplicate_count} adet mükerrer satır başarıyla temizlendi ---")
     
 
-# ==================5. ADIM: Mantıksal Filtreleme (Yıl Bazlı Filtreleme)==================
+# 5. ADIM: Mantıksal Filtreleme (Yıl Bazlı Filtreleme)
 # Analizin güncel kalması ve modern oyun pazarını yansıtması için 
 # sadece 2000 yılı ve sonrasında çıkan oyunlar veri setine dahil edilir.
 df = df[df['Year_of_Release'] >= 2000]
