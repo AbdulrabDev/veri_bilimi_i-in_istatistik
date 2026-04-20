@@ -198,11 +198,19 @@ HİPOTEZ 1 DETAYLI SONUÇ
 {'='*50}
 Hipotez   : 2010 Öncesi ve Sonrası Critic_Score
 Test      : Mann-Whitney U
-İstatistik: {stat:.2f}
+İstatistik: {stat:.2f} (658 × 342 = 224,936 toplam karşılaşma yapıldı)
 p-değeri  : {p_val:.8f}
 Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
 {'='*50}
 """)
+# =====================
+# HİPOTEZ 1 YORUM
+# =====================
+#Sonuç olarak, analizimizde anlamlı bir fark bulunamamıştır
+#ancak bu durum iki grup arasında kesinlikle fark yoktur anlamına gelmez
+#Yani fark olabilir, ama biz bunu istatistiksel olarak kanıtlayamadık
+
+
 # ==========================================
 # HİPOTEZ 2: KRUSKAL-WALLIS TESTİ
 # ==========================================
@@ -256,13 +264,62 @@ Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
 {'='*50}
 """)
 
-# ==========================================
+# =====================
 # HİPOTEZ 2 YORUM
-# ==========================================
+# =====================
 # Oyun türünün kullanıcı deneyim puanları (User_Score)
-# üzerinde istatistiksel olarak anlamlı bir etkisi
-# bulunmuştur/bulunamamıştır.
+# üzerinde istatistiksel olarak anlamlı bir etkisi bulunamamıştır.
 
-# Bu sonuç, oyuncuların belirli türlere olan tercihinin
-# puanlama davranışlarını etkilediğini göstermektedir.
+# ==========================================
+# HİPOTEZ 3: SPEARMAN KORELASYON TESTİ
+# ==========================================
 
+# NEDEN SPEARMAN?
+# 1. Veriler normal dağılmıyor (Shapiro p < 0.05)
+# 2. İki sayısal değişken arasındaki ilişkiyi ölçüyoruz
+# 3. Mann-Whitney ve Kruskal-Wallis grup karşılaştırması
+# için kullanılır, ilişki ölçümü için uygun değildir.
+
+
+print("\n--- HİPOTEZ 3: Spearman Korelasyon Testi ---")
+print("Soru: Eleştirmen puanı küresel satışları etkiliyor mu?")
+
+
+# Spearman Korelasyon Testini uygula
+corr, p_val = spearmanr(df_sample['Critic_Score'], df_sample['Global_Sales'])
+
+# Korelasyon gücünü belirle
+if abs(corr) >= 0.7:
+    strength = "Güçlü"
+elif abs(corr) >= 0.4:
+    strength = "Orta"
+elif abs(corr) >= 0.1:
+    strength = "Zayıf"
+else:
+    strength = "Çok Zayıf"
+
+direction = "Pozitif" if corr > 0 else "Negatif"
+
+# Sonucu 
+print(f"""
+{'='*50}
+HİPOTEZ 3 DETAYLI SONUÇ
+{'='*50}
+Hipotez         : Critic_Score ve Global_Sales İlişkisi
+Test            : Spearman Korelasyon
+Korelasyon (r)  : {corr:.4f}
+İlişki Gücü     : {strength} {direction}
+p-değeri        : {p_val:.8f}
+Karar           : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
+{'='*50}
+""")
+
+# ===================
+# HİPOTEZ 3 YORUM
+# ===================
+# Eleştirmen puanı (Critic_Score) ile küresel satışlar
+# (Global_Sales) arasında istatistiksel olarak anlamlı
+# pozitif bir ilişki bulunmuştur.
+# Bu sonuç, yüksek eleştirmen puanı alan oyunların
+# daha fazla satış yapma eğiliminde olduğunu gösteriyor.
+ 
