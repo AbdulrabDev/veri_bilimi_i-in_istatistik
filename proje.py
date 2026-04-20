@@ -148,6 +148,39 @@ plt.show()
 print("NEDEN KULLANILDI: Verilerin normal dağılıp dağılmadığını hem numerik (Shapiro) hem de görsel (Q-Q Plot) olarak doğrulamak için kullanıldı.")
 print("RAPOR: P < 0.05 ve Q-Q Plot'taki sapmalar, verilerin normal dağılmadığını ve sağa çarpık olduğunu kanıtlar.\n")
 
+scores = ['User_Score', 'Critic_Score']
+
+print("==== PUANLAR İÇİN NORMALLİK testi (SHAPIRO-WILK) ====\n")
+
+for score in scores:
+    print(f"--- {score} Analizi ---")
+    
+    # Shapiro-WILK Testi
+    shapiro_stat, shapiro_p = stats.shapiro(df_sample[score])
+    print(f"P-Değeri: {shapiro_p:.10f}")
+    
+    #  (Histogram & Q-Q Plot)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    
+    # Histogram & KDE
+    sns.histplot(df_sample[score], kde=True, color='purple', ax=ax1)
+    ax1.set_title(f'{score} Dağılımı (Histogram)')
+    
+    # Q-Q Plot
+    stats.probplot(df_sample[score], dist="norm", plot=ax2)
+    ax2.set_title(f'{score} için Q-Q Plot')
+    
+    plt.show()
+    
+    # Sonuç
+    if shapiro_p < 0.05:
+        print(f"YORUM: P-değeri ({shapiro_p:.4f}) < 0.05 olduğu için {score} normal dağılım göstermemektedir.")
+        print(f"Q-Q Plot üzerindeki sapmalar, verilerin normal dağılım çizgisinden uzaklaştığını kanıtlar.\n")
+    else:
+        print(f"YORUM: P-değeri ({shapiro_p:.4f}) > 0.05 olduğu için {score} normal dağılıma uygundur.\n")
+    
+    print("-" * 60)
+
 # Levene Testi (Varyans Homojenliği)
 action_sales = df_sample[df_sample['Genre'] == 'Action']['Global_Sales']
 sports_sales = df_sample[df_sample['Genre'] == 'Sports']['Global_Sales']
