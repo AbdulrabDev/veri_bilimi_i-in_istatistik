@@ -2,11 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
+from scipy.stats import mannwhitneyu, kruskal, spearmanr
 import statsmodels.api as sm
 import numpy as np
 
 # =============================================================================
-#         VERİ ANALİZİ, ÖN İŞLEME VE TEMİZLEME (SORUMLU: 1. KİŞİ)
+#        BÖLÜM 1 : VERİ ANALİZİ, ÖN İŞLEME VE TEMİZLEME 
 # =============================================================================
 
 # Bu bölümün amacı, ham veriyi analiz edilebilir, temiz ve güvenilir bir 
@@ -72,9 +73,9 @@ print("="*50)
 
 print(f"\n--- Analiz için toplam {len(df_sample)} adet tertemiz veri hazırlandı. ---")
 
-# ==========================================
-# İstatistiksel Hesaplamalar ve Görselleştirmeler
-# ==========================================
+# =============================================================================
+#         BÖLÜM 2 : İstatistiksel Hesaplamalar ve Görselleştirmeler
+# =============================================================================
 
 stats_summary = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].describe()
 print(stats_summary)
@@ -85,9 +86,9 @@ correlation = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].corr()
 print(correlation)
 sns.histplot(df_sample['Global_Sales'], kde=True)
 
-# ================================================
+
 # Visualization (Boxplot - Countplot - Histogram)
-# ================================================
+
 # 1. Boxplot للمبيعات (كشف القيم الشاذة)
 plt.figure(figsize=(6,4))
 sns.boxplot(x=df_sample['Global_Sales'])
@@ -102,7 +103,7 @@ plt.xticks(rotation=45)
 plt.show()
 
 # ==========================================
- YÜKSEK SATIŞLI OYUN ORANI
+ #YÜKSEK SATIŞLI OYUN ORANI
 # ==========================================
 mean_sales = df_sample['Global_Sales'].mean()
 percentage = (len(df_sample[df_sample['Global_Sales'] > mean_sales]) / len(df_sample)) * 100
@@ -111,10 +112,10 @@ print(f"Ortalama üstü satış yapan oyunların oranı: %{percentage:.2f}")
 
 
 
-# ==========================================
-# 3. VARSAYIM TESTLERİ (ASSUMPTION TESTS)
-# ==========================================
-print("\n--- [BÖLÜM 2]: VARSAYIM TESTLERİ ---")
+# =============================================================================
+#            BÖLÜM 3 : VARSAYIM TESTLERİ (ASSUMPTION TESTS)
+# =============================================================================
+print("\n--- [BÖLÜM 3]: VARSAYIM TESTLERİ ---")
 
 # Shapiro-Wilk Normallik Testi
 shapiro_stat, shapiro_p = stats.shapiro(df_sample['Global_Sales'])
@@ -145,34 +146,113 @@ print(f"2. Levene Testi P-Değeri: {levene_p:.10f}")
 print("NEDEN: Grupların varyanslarının eşitliğini kontrol etmek, karşılaştırma testlerinin güvenilirliği için gereklidir.")
 print("-" * 50)
 
+# =============================================================================
+#                    BÖLÜM 4 : HİPOTEZ TESTLERİ
+# =============================================================================
+
+alpha = 0.05 # Anlamlılık düzeyi %5
+
+print("\n" + "="*50)
+print("--- HİPOTEZ TESTLERİ ---")
+print("="*50)
+
 # ==========================================
-# 4. HİPOTEZ TESTLERİ (INFERENTIAL STATISTICS)
+# HİPOTEZ 1: MANN-WHITNEY U TESTİ
 # ==========================================
-print("\n--- [BÖLÜM 3]: HİPOTEZ TESTLERİ ---")
 
-# Spearman Korelasyon Analizi
-corr_val, spearman_p = stats.spearmanr(df_sample['Critic_Score'], df_sample['Global_Sales'])
-print(f"1. Spearman Korelasyonu: {corr_val:.3f} | P-Değeri: {spearman_p:.10f}")
+print("\n--- HİPOTEZ 1: Mann-Whitney U Testi ---")
+print("Soru: 2010 öncesi oyunların Critic_Score'u daha yüksek mi?")
 
-plt.figure()
-sns.regplot(x='Critic_Score', y='Global_Sales', data=df_sample, scatter_kws={'alpha':0.3}, line_kws={'color':'red'})
-plt.title("Eleştirmen Puanı ve Küresel Satış İlişkisi")
-plt.show()
+# NEDEN MANN-WHITNEY U?
+# 1. Veriler normal dağılmıyor (Shapiro p < 0.05)
+# 2. Sadece 2 grubumuz var (2010 öncesi / sonrası)
+# 3. Normal dağılım gerektirmeyen 2 grup testi
 
-print("RAPOR: Pozitif korelasyon, eleştirmen puanları arttıkça satışların artma eğiliminde olduğunu kanıtlar.")
+# Grupları oluştur
+group_before = df_sample[df_sample['Year_of_Release'] < 2010]['Critic_Score'].dropna()
+group_after  = df_sample[df_sample['Year_of_Release'] >= 2010]['Critic_Score'].dropna()
 
-# Bağımsız Örneklem T-Testi
-t_stat, t_p = stats.ttest_ind(action_sales.sample(100), sports_sales.sample(100))
-print(f"\n2. Bağımsız T-Testi (Action vs Sports) P-Değeri: {t_p:.4f}")
+# Grup bilgilerini yazdır
+print(f"\n2010 Öncesi Oyun Sayısı   : {len(group_before)}")
+print(f"2010 Sonrası Oyun Sayısı  : {len(group_after)}")
+print(f"2010 Öncesi Ortalama Puan : {group_before.mean():.2f}")
+print(f"2010 Sonrası Ortalama Puan: {group_after.mean():.2f}")
 
-plt.figure()
-sns.boxplot(x='Genre', y='Global_Sales', data=df[df['Genre'].isin(['Action', 'Sports'])])
-plt.ylim(0, 5)
-plt.title("Aksiyon ve Spor Oyunları Satış Karşılaştırması")
-plt.show()
+# Testi uygula
+stat, p_val = mannwhitneyu(group_before, group_after, alternative='greater')
 
-def karar_ver(p):
-    return "İstatistiksel olarak anlamlı bir fark vardır (H0 reddedildi)." if p < 0.05 else "Anlamlı bir fark yoktur (H0 reddedilemedi)."
+# Sonucu 
+print(f"""
+{'='*50}
+HİPOTEZ 1 DETAYLI SONUÇ
+{'='*50}
+Hipotez   : 2010 Öncesi ve Sonrası Critic_Score
+Test      : Mann-Whitney U
+İstatistik: {stat:.2f}
+p-değeri  : {p_val:.8f}
+Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
+{'='*50}
+""")
+# ==========================================
+# HİPOTEZ 2: KRUSKAL-WALLIS TESTİ
+# ==========================================
 
-print(f"KARAR: {karar_ver(t_p)}")
+# NEDEN KRUSKAL-WALLIS?
+# 1. Veriler normal dağılmıyor (Shapiro p < 0.05)
+# 2. 12 farklı türümüz var
+# 3. Normal dağılım gerektirmeyen çok grup testi
+# ANOVA normal dağılım varsaydığı için kullanamayız.
+# Mann-Whitney U sadece 2 grup için kullanılır.
+
+print("\n--- HİPOTEZ 2: Kruskal-Wallis Testi ---")
+print("Soru: Oyun türü kullanıcı puanlarını etkiliyor mu?")
+
+# Role-Playing → RPG olarak yeniden adlandır
+df_sample['Genre'] = df_sample['Genre'].replace({'Role-Playing': 'RPG'})
+
+# Tüm türleri al
+all_genres = sorted(df_sample['Genre'].unique())
+
+# Her tür için grup oluştur ve bilgileri yazdır
+groups_genre = []
+print("Tür Bazlı Ortalama Kullanıcı Puanları:")
+print("-" * 40)
+
+for genre in all_genres:
+    group = df_sample[df_sample['Genre'] == genre]['User_Score'].dropna()
+    groups_genre.append(group)
+    print(f"{genre:<15} → Oyun Sayısı: {len(group):>3}, Ortalama: {group.mean():.2f}")
+
+# En yüksek ve en düşük türü bul
+genre_means = df_sample.groupby('Genre')['User_Score'].mean()
+best_genre  = genre_means.idxmax()
+worst_genre = genre_means.idxmin()
+print(f"\nEn Yüksek Puanlı Tür: {best_genre} ({genre_means[best_genre]:.2f})")
+print(f"En Düşük Puanlı Tür : {worst_genre} ({genre_means[worst_genre]:.2f})")
+
+# Testi uygula
+stat, p_val = kruskal(*groups_genre)
+
+# Sonucu 
+print(f"""
+{'='*50}
+HİPOTEZ 2 DETAYLI SONUÇ
+{'='*50}
+Hipotez   : Oyun Türünün User_Score Üzerindeki Etkisi
+Test      : Kruskal-Wallis
+İstatistik: {stat:.2f}
+p-değeri  : {p_val:.8f}
+Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
+{'='*50}
+""")
+
+# ==========================================
+# HİPOTEZ 2 YORUM
+# ==========================================
+# Oyun türünün kullanıcı deneyim puanları (User_Score)
+# üzerinde istatistiksel olarak anlamlı bir etkisi
+# bulunmuştur/bulunamamıştır.
+
+# Bu sonuç, oyuncuların belirli türlere olan tercihinin
+# puanlama davranışlarını etkilediğini göstermektedir.
 
