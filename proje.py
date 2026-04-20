@@ -86,9 +86,9 @@ correlation = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].corr()
 print(correlation)
 sns.histplot(df_sample['Global_Sales'], kde=True)
 
-
+# ==========================================
 # Visualization (Boxplot - Countplot - Histogram)
-
+# ==========================================
 # 1. Boxplot للمبيعات (كشف القيم الشاذة)
 plt.figure(figsize=(6,4))
 sns.boxplot(x=df_sample['Global_Sales'])
