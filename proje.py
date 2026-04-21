@@ -91,10 +91,6 @@ print(f"\n--- Analiz için toplam {len(df_sample)} adet tertemiz veri hazırland
 # Amaç; satışlar ve puanlar gibi temel değişkenlerin genel yapısını,
 # dağılım özelliklerini ve değişkenler arasındaki ilişkileri incelemektir.
 
-print("\n" + "="*60)
-print("--- 2. KİŞİ: BETİMSEL İSTATİSTİK VE GÖRSEL ANALİZ RAPORU ---")
-print("="*60)
-
 # ---------------------------------------------------------------------
 # 1. ADIM: Analizde kullanılacak sayısal sütunların seçilmesi
 # Global_Sales analizimizin temel hedef değişkenidir.
