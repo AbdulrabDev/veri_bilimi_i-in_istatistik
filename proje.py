@@ -75,7 +75,7 @@ df_sample = df.sample(n=1000, random_state=42)
 # Bu adımda, yaptığımız tüm temizlik işlemlerinin başarılı olup olmadığı test edilir.
 # Puan sütunlarında 0 (sıfır) sonucu çıkması, verinin tamamen temizlendiğini kanıtlar.
 print("\n" + "="*50)
-print("--- 1. KİŞİ: FİNAL TEMİZLİK KONTROL RAPORU ---")
+print("--- FİNAL TEMİZLİK KONTROL RAPORU ---")
 final_check = df_sample[['Critic_Score', 'User_Score']].isnull().sum()
 print("Kalan Eksik Veri Sayısı (0 olmalı):")
 print(final_check)
