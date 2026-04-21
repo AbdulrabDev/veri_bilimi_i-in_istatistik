@@ -180,7 +180,40 @@ for score in scores:
         print(f"YORUM: P-değeri ({shapiro_p:.4f}) > 0.05 olduğu için {score} normal dağılıma uygundur.\n")
     
     print("-" * 60)
+print("==== Years_of release İÇİN KAPSAMLI NORMALLİK ANALİZİ ====\n")
 
+
+for var in target_variables:
+    print(f"--- ANALİZ EDİLEN DEĞİŞKEN: {var} ---")
+    
+    # [أ] Shapiro-Wilk Testi (İstatistiksel Kontrol)
+    stat, p_val = stats.shapiro(df_sample[var])
+    print(f"Shapiro-Wilk P-Değeri: {p_val:.10f}")
+    
+    #  Görselleştirme (Histogram ve Q-Q Plot yan yana)
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    
+    # Histogram & Dağılım Eğrisi
+    sns.histplot(df_sample[var], kde=True, color='darkred' if var == 'Year_of_Release' else 'darkblue', ax=ax1)
+    ax1.set_title(f'{var} Dağılımı (Histogram)')
+    
+    # Q-Q Plot
+    stats.probplot(df_sample[var], dist="norm", plot=ax2)
+    ax2.set_title(f'{var} için Q-Q Plot')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Yorumlama
+    print(f"NEDEN KULLANILDI: {var} değişkeninin normal dağılım sergileyip sergilemediğini görsel ve numerik olarak doğrulamak için.")
+    
+    if p_val < 0.05:
+        print(f"SONUÇ: P-değeri < 0.05 olduğu için {var} normal dağılım göstermemektedir.")
+        print(f"YORUM: Grafikler üzerindeki sapmalar, verinin parametrik test koşullarını tam olarak sağlamadığını kanıtlar.\n")
+    else:
+        print(f"SONUÇ: P-değeri > 0.05 olduğu için {var} normal dağılıma uygundur.\n")
+    
+    print("-" * 80 + "\n")
 # Levene Testi (Varyans Homojenliği)
 action_sales = df_sample[df_sample['Genre'] == 'Action']['Global_Sales']
 sports_sales = df_sample[df_sample['Genre'] == 'Sports']['Global_Sales']
