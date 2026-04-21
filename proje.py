@@ -326,7 +326,7 @@ print("--- HİPOTEZ TESTLERİ ---")
 print("="*50)
 
 # ==========================================
-# HİPOTEZ 1: MANN-WHITNEY U TESTİ
+# HİPOTEZ 1: 2010 öncesi oyunların Critic_Score'u daha yüksek
 # ==========================================
 
 print("\n--- HİPOTEZ 1: Mann-Whitney U Testi ---")
@@ -371,7 +371,7 @@ Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
 
 
 # ==========================================
-# HİPOTEZ 2: KRUSKAL-WALLIS TESTİ
+# HİPOTEZ 2: Oyun türü kullanıcı puanlarını etkiliyor mu
 # ==========================================
 
 # NEDEN KRUSKAL-WALLIS?
@@ -430,7 +430,7 @@ Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
 # üzerinde istatistiksel olarak anlamlı bir etkisi bulunamamıştır.
 
 # ==========================================
-# HİPOTEZ 3: SPEARMAN KORELASYON TESTİ
+# HİPOTEZ 3: Eleştirmen puanı küresel satışları etkiliyor mu?
 # ==========================================
 
 # NEDEN SPEARMAN?
