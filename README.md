@@ -45,7 +45,7 @@ Temizleme işlemi sonrası elde edilen final raporu:
 
 ## 👤 Hazırlayan (Author)
 * **ABDULRAB  ABDULRAB**
-  **Ahmed Al-shakaa**
-  **Hagar AMIN**
-  **Mohammed Sufyan** - *Bilişim Sistemleri Mühendisliği Öğrencisi*
+  * **Ahmed Al-shakaa**
+  * **Hagar AMIN**
+  * **Mohammed Sufyan** - *Bilişim Sistemleri Mühendisliği Öğrencisi*
 * Sakarya Üniversitesi (SAU)
