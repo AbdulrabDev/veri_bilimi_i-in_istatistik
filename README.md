@@ -47,5 +47,6 @@ Temizleme işlemi sonrası elde edilen final raporu:
 * **ABDULRAB  ABDULRAB**
 * **Ahmed Al-shakaa**
 * **Hagar AMIN**
-* **Mohammed Sufyan**  * *Bilişim Sistemleri Mühendisliği Öğrencileri*
+* **Mohammed Sufyan**
+*  *Bilişim Sistemleri Mühendisliği Öğrencileri*
 * Sakarya Üniversitesi (SAU)
