@@ -87,39 +87,136 @@ print(f"\n--- Analiz için toplam {len(df_sample)} adet tertemiz veri hazırland
 #         BÖLÜM 2 : İstatistiksel Hesaplamalar ve Görselleştirmeler
 # =============================================================================
 
-stats_summary = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].describe()
+# Bu bölümde veri setinin betimsel istatistik analizi yapılmaktadır.
+# Amaç; satışlar ve puanlar gibi temel değişkenlerin genel yapısını,
+# dağılım özelliklerini ve değişkenler arasındaki ilişkileri incelemektir.
+
+print("\n" + "="*60)
+print("--- 2. KİŞİ: BETİMSEL İSTATİSTİK VE GÖRSEL ANALİZ RAPORU ---")
+print("="*60)
+
+# ---------------------------------------------------------------------
+# 1. ADIM: Analizde kullanılacak sayısal sütunların seçilmesi
+# Global_Sales analizimizin temel hedef değişkenidir.
+# Critic_Score ve User_Score ise satışlarla ilişkisi incelenecek puan değişkenleridir.
+selected_cols = ['Global_Sales', 'Critic_Score', 'User_Score']
+
+# Sadece gerekli sütunları alarak daha okunabilir bir alt veri çerçevesi oluşturuyoruz.
+analysis_df = df_sample[selected_cols]
+
+# ---------------------------------------------------------------------
+# 2. ADIM: Temel betimsel istatistiklerin hesaplanması
+# describe() fonksiyonu; gözlem sayısı, ortalama, standart sapma,
+# minimum, maksimum ve çeyreklik değerleri verir.
+print("\n--- TEMEL BETİMSEL İSTATİSTİKLER ---")
+stats_summary = analysis_df.describe()
 print(stats_summary)
 
-print(df_sample['Global_Sales'].skew())
+# ---------------------------------------------------------------------
+# 3. ADIM: Varyans hesaplanması
+# Varyans, verinin ortalama etrafında ne kadar yayıldığını gösterir.
+print("\n--- VARYANS DEĞERLERİ ---")
+variance_values = analysis_df.var()
+print(variance_values)
 
-correlation = df_sample[['Global_Sales', 'Critic_Score', 'User_Score']].corr()
+# ---------------------------------------------------------------------
+# 4. ADIM: Çarpıklık (Skewness) analizi
+# Çarpıklık değeri, dağılımın simetrik olup olmadığını gösterir.
+# Pozitif değer sağa çarpıklığı, negatif değer sola çarpıklığı ifade eder.
+print("\n--- ÇARPIKLIK (SKEWNESS) ANALİZİ ---")
+skew_values = analysis_df.skew()
+print(skew_values)
+
+# Global_Sales için özel yorum
+global_sales_skew = analysis_df['Global_Sales'].skew()
+if global_sales_skew > 1:
+    print("YORUM: Global_Sales değişkeni belirgin şekilde sağa çarpıktır.")
+elif global_sales_skew > 0:
+    print("YORUM: Global_Sales değişkeni hafif sağa çarpıktır.")
+elif global_sales_skew < 0:
+    print("YORUM: Global_Sales değişkeni sola çarpıktır.")
+else:
+    print("YORUM: Global_Sales dağılımı yaklaşık simetriktir.")
+
+# ---------------------------------------------------------------------
+# 5. ADIM: Korelasyon matrisinin oluşturulması
+# Bu analiz, satışlar ile eleştirmen ve kullanıcı puanları arasındaki
+# doğrusal ilişkinin gücünü ve yönünü gösterir.
+print("\n--- KORELASYON MATRİSİ ---")
+correlation = analysis_df.corr()
 print(correlation)
-sns.histplot(df_sample['Global_Sales'], kde=True)
 
-# ==========================================
-# Visualization (Boxplot - Countplot - Histogram)
-# ==========================================
-# 1. Boxplot للمبيعات (كشف القيم الشاذة)
-plt.figure(figsize=(6,4))
-sns.boxplot(x=df_sample['Global_Sales'])
+# Critic_Score ile Global_Sales arasındaki ilişkiye kısa yorum
+critic_sales_corr = correlation.loc['Global_Sales', 'Critic_Score']
+user_sales_corr = correlation.loc['Global_Sales', 'User_Score']
+
+print("\n--- KORELASYON YORUMU ---")
+print(f"Critic_Score ile Global_Sales korelasyonu: {critic_sales_corr:.3f}")
+print(f"User_Score ile Global_Sales korelasyonu  : {user_sales_corr:.3f}")
+
+# ---------------------------------------------------------------------
+# 6. ADIM: Global_Sales histogram grafiği
+# Histogram, verinin hangi aralıklarda yoğunlaştığını gösterir.
+# KDE eğrisi ise dağılımın genel şeklini daha yumuşak biçimde görmemizi sağlar.
+plt.figure(figsize=(8, 5))
+sns.histplot(analysis_df['Global_Sales'], kde=True, bins=30, color='steelblue')
+plt.title("Global Sales Dağılımı")
+plt.xlabel("Global Sales")
+plt.ylabel("Frekans")
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# ---------------------------------------------------------------------
+# 7. ADIM: Critic_Score histogram grafiği
+# Eleştirmen puanlarının örneklem içinde nasıl dağıldığını görselleştiriyoruz.
+plt.figure(figsize=(8, 5))
+sns.histplot(analysis_df['Critic_Score'], kde=True, bins=25, color='darkgreen')
+plt.title("Critic Score Dağılımı")
+plt.xlabel("Critic Score")
+plt.ylabel("Frekans")
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# ---------------------------------------------------------------------
+# 8. ADIM: User_Score histogram grafiği
+# Kullanıcı puanlarının yoğunlaştığı aralıkları görmek için çizilir.
+plt.figure(figsize=(8, 5))
+sns.histplot(analysis_df['User_Score'], kde=True, bins=25, color='darkorange')
+plt.title("User Score Dağılımı")
+plt.xlabel("User Score")
+plt.ylabel("Frekans")
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# ---------------------------------------------------------------------
+# 9. ADIM: Global_Sales boxplot grafiği
+# Aykırı değerlerin varlığını kontrol etmek için kullanılır.
+plt.figure(figsize=(8, 4))
+sns.boxplot(x=analysis_df['Global_Sales'], color='lightcoral')
 plt.title("Global Sales Boxplot")
+plt.xlabel("Global Sales")
+plt.grid(True, alpha=0.3)
 plt.show()
 
-# 2. Countplot للأنواع (Genre)
-plt.figure(figsize=(8,5))
-sns.countplot(x='Genre', data=df_sample)
-plt.title("Game Genre Distribution")
+# ---------------------------------------------------------------------
+# 10. ADIM: Türlere göre oyun sayısı (Countplot)
+# Hangi oyun türünün örneklemde daha fazla temsil edildiğini gösterir.
+plt.figure(figsize=(10, 5))
+sns.countplot(x='Genre', data=df_sample, order=df_sample['Genre'].value_counts().index, palette='viridis')
+plt.title("Oyun Türlerinin Dağılımı")
+plt.xlabel("Genre")
+plt.ylabel("Oyun Sayısı")
 plt.xticks(rotation=45)
+plt.grid(True, axis='y', alpha=0.3)
 plt.show()
 
-# ==========================================
- #YÜKSEK SATIŞLI OYUN ORANI
-# ==========================================
-mean_sales = df_sample['Global_Sales'].mean()
-percentage = (len(df_sample[df_sample['Global_Sales'] > mean_sales]) / len(df_sample)) * 100
-print(f"\n--- [BÖLÜM 4]: EK ANALİZ ---")
-print(f"Ortalama üstü satış yapan oyunların oranı: %{percentage:.2f}")
-
+# ---------------------------------------------------------------------
+# 11. ADIM: Korelasyon ısı haritası (Heatmap)
+# Korelasyon matrisini görsel olarak yorumlamayı kolaylaştırır.
+plt.figure(figsize=(6, 4))
+sns.heatmap(correlation, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
+plt.title("Korelasyon Isı Haritası")
+plt.show()
 
 
 # =============================================================================
