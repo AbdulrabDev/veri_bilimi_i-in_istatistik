@@ -378,8 +378,7 @@ Karar     : {"H0 Reddedilir ✅" if p_val < alpha else "H0 Reddedilemez ❌"}
 # 1. Veriler normal dağılmıyor (Shapiro p < 0.05)
 # 2. 12 farklı türümüz var
 # 3. Normal dağılım gerektirmeyen çok grup testi
-# ANOVA normal dağılım varsaydığı için kullanamayız.
-# Mann-Whitney U sadece 2 grup için kullanılır.
+
 
 print("\n--- HİPOTEZ 2: Kruskal-Wallis Testi ---")
 print("Soru: Oyun türü kullanıcı puanlarını etkiliyor mu?")
