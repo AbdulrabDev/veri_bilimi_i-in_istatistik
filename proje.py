@@ -182,7 +182,7 @@ for score in scores:
     print("-" * 60)
 print("==== Years_of release İÇİN KAPSAMLI NORMALLİK ANALİZİ ====\n")
 
-
+target_variables =['Year_of_Release','NA_Sales','EU_Sales']
 for var in target_variables:
     print(f"--- ANALİZ EDİLEN DEĞİŞKEN: {var} ---")
     
